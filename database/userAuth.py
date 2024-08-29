@@ -1,19 +1,21 @@
+from mysql.connector.cursor_cext import CMySQLCursorBuffered
+
 from database.database import get_connection
 
 
 def check_if_email_already_used(email) -> bool:
     with get_connection() as db:
-        cursor = db.cursor(buffered=True, dictionary=True)
+        cursor:CMySQLCursorBuffered = db.cursor(buffered=True)
         cursor.execute("SELECT * FROM users WHERE email = %(email)s", {"email": email})
-        return cursor.fetchnone() is not None
+        return cursor.fetchone() is not None
 
 
-def create_user(email, password, username,object_pronoun,subject_pronoun,possessive_pronoun) -> dict:
+def create_user(email, password, username,object_pronoun,subject_pronoun,possessive_pronoun,salt) -> dict:
     with get_connection() as db:
         cursor = db.cursor(buffered=True, dictionary=True)
         cursor.execute(
-            "INSERT INTO users (email, password_hash,username,object_pronoun,subject_pronoun,possessive_pronoun) VALUES (%(email)s, %(password)s, %(username)s, %(object_pronoun)s, %(subject_pronoun)s, %(possessive_pronoun)s)",
-            {"email": email, "password": password, "username": username, "object_pronoun": object_pronoun, "subject_pronoun": subject_pronoun, "possessive_pronoun": possessive_pronoun})
+            "INSERT INTO users (email, password_hash,username,object_pronoun,subject_pronoun,`possessive_pronoun`,salt) VALUES (%(email)s, %(password)s, %(username)s, %(object_pronoun)s, %(subject_pronoun)s, %(possessive_pronoun)s, %(salt)s)",
+            {"email": email, "password": password, "username": username, "object_pronoun": object_pronoun, "subject_pronoun": subject_pronoun, "possessive_pronoun": possessive_pronoun,"salt": salt})
         db.commit()
         cursor.execute("SELECT * FROM users WHERE email = %(email)s", {"email": email})
         return cursor.fetchall()[0]
@@ -47,9 +49,5 @@ def create_user_refresh_token(user_id,token):
     with get_connection() as db:
         cursor = db.cursor(buffered=True, dictionary=True)
         cursor.execute("INSERT INTO refresh_tokens (user_id, token) VALUES (%(user_id)s, %(token)s)", {"user_id": user_id,"token":token})
+        db.commit()
 
-def check_user_credentials(email, password_hash):
-    with get_connection() as db:
-        cursor = db.cursor(buffered=True, dictionary=True)
-        cursor.execute("SELECT * FROM users WHERE email = %(email)s AND password_hash = %(password_hash)s", {"email": email, "password_hash": password_hash})
-        return cursor.fetchnone() is not None

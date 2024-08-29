@@ -13,7 +13,7 @@ login = Blueprint('login', __name__, template_folder='templates')
 @login.route('/acc/login/credentials', methods=['POST'])
 async def login_with_credentials_and_get_new_tokens():
     email = flask.request.form.get('email')
-    password = flask.request.form.get('passwordHash')
+    password = flask.request.form.get('password')
     if not database.userAuth.check_user_credentials(email, password):
         return Response(response="Invalid email or Password", status=401)
     if not database.userAuth.email_is_verified(email):
@@ -24,10 +24,4 @@ async def login_with_credentials_and_get_new_tokens():
     database.userAuth.create_user_refresh_token(user_info["user_id"], refresh_token)
     return flask.jsonify({"jwt": jwt_token, "refreshToken": refresh_token}, 200)
 
-
-#todo
-async def login_with_jwt():
-    jwt_token = flask.request.form.get('jwt')
-    if not userAuth.jwtCreation.jwt_is_valid(jwt_token):
-        return Response(response="Invalid JWT", status=401)
 
