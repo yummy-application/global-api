@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import secrets
@@ -17,12 +18,12 @@ account_creation = Blueprint('account_creation', __name__, template_folder='temp
 
 @account_creation.route('/acc/create', methods=['POST'])
 def create_account():
-    email = flask.request.headers.get('email')
-    password = flask.request.headers.get('password')
-    username = flask.request.headers.get('username')
-    subject_pronoun = flask.request.headers.get('subjectPronoun')
-    object_pronoun = flask.request.headers.get('objectPronoun')
-    possessive_pronoun = flask.request.headers.get('possessivePronoun')
+    email = flask.request.json.get('email').lower()
+    password = flask.request.json.get('password')
+    username = flask.request.json.get('username')
+    subject_pronoun = flask.request.json.get('subjectPronoun')
+    object_pronoun = flask.request.json.get('objectPronoun')
+    possessive_pronoun = flask.request.json.get('possessivePronoun')
     salt,password_hash = userAuth.hash.hash_password(password)
     email_regex = "^((?!\.)[\w\-_.]*[^.])@([\w-]+\.)+[\w-]{2,4}$"
     if not re.match(email_regex, email):

@@ -14,7 +14,7 @@ email_verification = Blueprint('email_verification', __name__, template_folder='
 
 
 @email_verification.route('/acc/verify', methods=['GET'])
-async def verify_email():
+def verify_email():
     mail = flask.request.args.get('mail')
     if not database.userAuth.user_exists(mail):
         return "User with this mail does not exist"

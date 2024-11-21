@@ -73,4 +73,4 @@ def validate_refresh_token(token: str):
     with get_connection() as db:
         cursor = db.cursor(buffered=True, dictionary=True)
         cursor.execute("SELECT * FROM refresh_tokens WHERE token = %(token)s", {"token": token})
-        return cursor.fetchall()["refresh_token"] == token
+        return cursor.fetchone() is not None

@@ -1,3 +1,4 @@
+import json
 import os
 import secrets
 import time
@@ -30,9 +31,10 @@ jwt_recreation = Blueprint('jwtRecreation', __name__, template_folder='templates
 
 
 @jwt_recreation.route('/acc/jwt/refresh', methods=['POST'])
-async def refresh_jwt():
-    refresh_token = flask.request.headers.get('refreshToken')
-    email = flask.request.headers.get('email')
+def refresh_jwt():
+    request_data = flask.request.json
+    refresh_token = request_data['refreshToken']
+    email = request_data['email']
     if not database.userAuth.validate_refresh_token(refresh_token):
         return Response(response="Invalid refresh token", status=401)
     user_data = database.userAuth.full_user_info_by_email(email)

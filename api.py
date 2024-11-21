@@ -1,7 +1,4 @@
-from webbrowser import register
-
 from flask import Flask
-
 from user.info import user_info
 from userAuth.accCreation import account_creation
 from userAuth.jwtCreation import jwt_recreation

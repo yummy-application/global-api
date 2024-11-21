@@ -9,9 +9,9 @@ from userAuth import jwtCreation
 user_info = Blueprint('user_info', __name__, template_folder='templates')
 
 
-@user_info.route('/acc/info', methods=['POST'])
-async def login_with_credentials_and_get_new_tokens():
-    jwt = flask.request.headers.get('jwt')
+@user_info.route('/acc/info', methods=['GET'])
+def login_with_credentials_and_get_new_tokens():
+    jwt = flask.request.headers.get('Authorization')
     jwt_data = jwtCreation.jwt_is_valid(jwt)
     if not jwt_data:
         return Response(response="Invalid jwt", status=401)
